@@ -71,19 +71,64 @@ def to_grayscale(img):
 
 
 filters = {
-    "Box Blur": apply_box_blur,
-    "Gaussian Blur": apply_gaussian_blur,
-    "Median Blur": apply_median_blur,
-    "Bilateral Filter": apply_bilateral_filter,
-    "Sharpen": apply_sharpen,
-    "Laplacian": apply_laplacian,
-    "Sobel X": lambda img: apply_sobel(img, dx=1, dy=0, ksize=3),
-    "Sobel Y": lambda img: apply_sobel(img, dx=0, dy=1, ksize=3),
-    "Canny Edges": apply_canny,
-    "Emboss": apply_emboss,
-    "Sepia": apply_sepia,
-    "Red Channel": lambda img: select_channel(img, 'R'),
-    "Green Channel": lambda img: select_channel(img, 'G'),
-    "Blue Channel": lambda img: select_channel(img, 'B'),
-    "Grayscale": to_grayscale
+    "Box Blur": {
+        "func": apply_box_blur,
+        "desc": "Aplica uma média simples entre os pixels vizinhos, resultando em uma suavização uniforme da imagem."
+    },
+    "Gaussian Blur": {
+        "func": apply_gaussian_blur,
+        "desc": "Utiliza uma distribuição Gaussiana para suavizar a imagem, reduzindo ruídos e mantendo uma transição mais natural entre os pixels."
+    },
+    "Median Blur": {
+        "func": apply_median_blur,
+        "desc": "Substitui cada pixel pela mediana de sua vizinhança, sendo altamente eficaz na remoção de ruídos do tipo sal e pimenta."
+    },
+    "Bilateral Filter": {
+        "func": apply_bilateral_filter,
+        "desc": "Reduz o ruído enquanto preserva as bordas, equilibrando suavização e nitidez da imagem."
+    },
+    "Sharpen": {
+        "func": apply_sharpen,
+        "desc": "Realça detalhes e bordas, tornando a imagem mais nítida e destacando seus contornos."
+    },
+    "Laplacian": {
+        "func": apply_laplacian,
+        "desc": "Detecta e enfatiza bordas aplicando o operador Laplaciano, útil para realçar transições bruscas de intensidade."
+    },
+    "Sobel X": {
+        "func": lambda img: apply_sobel(img, dx=1, dy=0, ksize=3),
+        "desc": "Realça bordas horizontais na imagem usando o operador Sobel na direção X."
+    },
+    "Sobel Y": {
+        "func": lambda img: apply_sobel(img, dx=0, dy=1, ksize=3),
+        "desc": "Realça bordas verticais na imagem usando o operador Sobel na direção Y."
+    },
+    "Canny Edges": {
+        "func": apply_canny,
+        "desc": "Aplica o detector de bordas de Canny, identificando contornos precisos com base em gradientes de intensidade."
+    },
+    "Emboss": {
+        "func": apply_emboss,
+        "desc": "Cria um efeito de relevo (emboss), simulando uma textura tridimensional sobre a imagem."
+    },
+    "Sepia": {
+        "func": apply_sepia,
+        "desc": "Adiciona um tom sépia à imagem, criando um efeito vintage semelhante a fotografias antigas."
+    },
+    "Red Channel": {
+        "func": lambda img: select_channel(img, 'R'),
+        "desc": "Isola o canal vermelho, mantendo apenas os tons dessa cor na imagem."
+    },
+    "Green Channel": {
+        "func": lambda img: select_channel(img, 'G'),
+        "desc": "Isola o canal verde, exibindo apenas as intensidades correspondentes a essa componente de cor."
+    },
+    "Blue Channel": {
+        "func": lambda img: select_channel(img, 'B'),
+        "desc": "Isola o canal azul, mostrando apenas os tons dessa faixa espectral na imagem."
+    },
+    "Grayscale": {
+        "func": to_grayscale,
+        "desc": "Converte a imagem colorida em tons de cinza, representando a intensidade luminosa de cada pixel."
+    }
 }
