@@ -5,7 +5,7 @@ from PIL import Image
 import tempfile
 import os
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
-from apply_filters import filters
+from apply_filters import FILTERS, MATH_OPS
 import uuid
 from pathlib import Path
 import av
@@ -14,7 +14,7 @@ from util import delete_folder_files
 
 st.title("Demo de Filtros em Foto e Vídeo com OpenCV")
 
-tab1, tab2, tab3 = st.tabs(["Foto", "Upload", "Vídeo"])
+tab1, tab2, tab3, tab4 = st.tabs(["Foto", "Upload", "Vídeo", "Operações Matemáticas"])
 
 # --- Aba Foto ---
 with tab1:
@@ -28,11 +28,11 @@ with tab1:
         else:
             img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 
-        filters_list = [""] + list(filters.keys())
+        filters_list = [""] + list(FILTERS.keys())
         filtro = st.selectbox("Escolha um filtro", filters_list)
         if filtro != "":
-            st.markdown(f"**Descrição do filtro:** {filters[filtro]['desc']}")
-            img_filtrada = filters[filtro]["func"](img_np)
+            st.markdown(f"**Descrição do filtro:** {FILTERS[filtro]['desc']}")
+            img_filtrada = FILTERS[filtro]["func"](img_np)
             if len(img_filtrada.shape) == 2:
                 img_filtrada = cv2.cvtColor(img_filtrada, cv2.COLOR_GRAY2BGR)
             st.image(cv2.cvtColor(img_filtrada, cv2.COLOR_BGR2RGB), caption=f"Foto com filtro: {filtro}")
@@ -57,11 +57,11 @@ with tab2:
             else:
                 img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 
-            filters_list_upload = [""] + list(filters.keys())
+            filters_list_upload = [""] + list(FILTERS.keys())
             filtro_upload = st.selectbox("Escolha um filtro para a imagem", filters_list_upload, key="upload_filtro_img")
             if filtro_upload != "":
-                st.markdown(f"**Descrição do filtro:** {filters[filtro_upload]['desc']}")
-                img_filtrada = filters[filtro_upload]["func"](img_np)
+                st.markdown(f"**Descrição do filtro:** {FILTERS[filtro_upload]['desc']}")
+                img_filtrada = FILTERS[filtro_upload]["func"](img_np)
                 if len(img_filtrada.shape) == 2:
                     img_filtrada = cv2.cvtColor(img_filtrada, cv2.COLOR_GRAY2BGR)
                 st.image(cv2.cvtColor(img_filtrada, cv2.COLOR_BGR2RGB), caption=f"Imagem com filtro: {filtro_upload}")
@@ -77,10 +77,10 @@ with tab2:
             temp_video_path = tfile.name
             st.video(temp_video_path)
 
-            filters_list_upload = [""] + list(filters.keys())
+            filters_list_upload = [""] + list(FILTERS.keys())
             filtro_upload = st.selectbox("Escolha um filtro para o vídeo", filters_list_upload, key="upload_filtro_vid")
             if filtro_upload != "":
-                st.markdown(f"**Descrição do filtro:** {filters[filtro_upload]['desc']}")
+                st.markdown(f"**Descrição do filtro:** {FILTERS[filtro_upload]['desc']}")
                 st.write("Processando vídeo, aguarde...")
                 cap = cv2.VideoCapture(temp_video_path)
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -94,7 +94,7 @@ with tab2:
                     ret, frame = cap.read()
                     if not ret:
                         break
-                    frame_filt = filters[filtro_upload]["func"](frame)
+                    frame_filt = FILTERS[filtro_upload]["func"](frame)
                     if len(frame_filt.shape) == 2:
                         frame_filt = cv2.cvtColor(frame_filt, cv2.COLOR_GRAY2BGR)
                     out.write(frame_filt)
@@ -126,9 +126,9 @@ with tab3:
             return False
     st.header("Gravar vídeo da webcam (filtros em tempo real)")
     st.write("Grave um vídeo, aplique filtro em tempo real e salve o vídeo original e filtrado.")
-    filter_options = [""] + list(filters.keys())
+    filter_options = [""] + list(FILTERS.keys())
     selected_filter = st.selectbox("Escolha um filtro para o vídeo", filter_options, key="webrtc_filtro_vid")
-    st.markdown(f"**Descrição do filtro:** {filters[selected_filter]['desc']}" if selected_filter else "")
+    st.markdown(f"**Descrição do filtro:** {FILTERS[selected_filter]['desc']}" if selected_filter else "")
 
     RECORD_DIR = Path("./records")
     RECORD_DIR.mkdir(exist_ok=True)
@@ -147,8 +147,8 @@ with tab3:
 
     def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
-        if selected_filter and selected_filter in filters:
-            img = filters[selected_filter]["func"](img)
+        if selected_filter and selected_filter in FILTERS:
+            img = FILTERS[selected_filter]["func"](img)
             if len(img.shape) == 2:
                 img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
@@ -188,3 +188,54 @@ with tab3:
                     "Download do vídeo", f, "output.mp4", key="download_output_h264_video_tab3", mime="video/mp4"
                 )
                 delete_folder_files(RECORD_DIR)
+
+with tab4:
+    st.header("Operações Matemáticas entre Imagens")
+    st.write("Selecione duas imagens (upload ou tirar foto) e uma operação para combinar.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        tipo_img1 = st.radio("Imagem 1", ["Upload", "Tirar Foto"], key="tipo_img1")
+        if tipo_img1 == "Upload":
+            img_file1 = st.file_uploader("Upload da Imagem 1", type=["png", "jpg", "jpeg"], key="math_img1_upload")
+            if img_file1:
+                img1 = Image.open(img_file1)
+        else:
+            img_file1 = st.camera_input("Tire a Foto 1", key="math_img1_camera")
+            if img_file1:
+                img1 = Image.open(img_file1)
+
+    with col2:
+        tipo_img2 = st.radio("Imagem 2", ["Upload", "Tirar Foto"], key="tipo_img2")
+        if tipo_img2 == "Upload":
+            img_file2 = st.file_uploader("Upload da Imagem 2", type=["png", "jpg", "jpeg"], key="math_img2_upload")
+            if img_file2:
+                img2 = Image.open(img_file2)
+        else:
+            img_file2 = st.camera_input("Tire a Foto 2", key="math_img2_camera")
+            if img_file2:
+                img2 = Image.open(img_file2)
+
+    op_list = list(MATH_OPS.keys())
+    op_selected = st.selectbox("Operação", op_list)
+
+    if 'img1' in locals() and 'img2' in locals():
+        img1_np = np.array(img1)
+        img2_np = np.array(img2)
+        # Ajusta tamanho se necessário
+        if img1_np.shape != img2_np.shape:
+            st.warning("As imagens precisam ter o mesmo tamanho e canais. Redimensionando a segunda imagem...")
+            img2_np = cv2.resize(img2_np, (img1_np.shape[1], img1_np.shape[0]))
+        # Executa operação
+        if op_selected == "Blending":
+            alpha = st.slider("Peso da Imagem 1 (alpha)", 0.0, 1.0, 0.5, 0.01)
+            result = MATH_OPS[op_selected]["func"](img1_np, img2_np, alpha)
+        elif op_selected == "Subtração Ponderada":
+            alpha = st.slider("Peso da Imagem 1 (alpha)", 0.0, 1.0, 0.7, 0.01)
+            beta = st.slider("Peso da Imagem 2 (beta)", 0.0, 1.0, 0.3, 0.01)
+            result = MATH_OPS[op_selected]["func"](img1_np, img2_np, alpha, beta)
+        else:
+            result = MATH_OPS[op_selected]["func"](img1_np, img2_np)
+        st.image(result, caption=f"Resultado: {op_selected}")
+        img_bytes = cv2.imencode('.png', result)[1].tobytes()
+        st.download_button("Salvar resultado", img_bytes, file_name="resultado.png", mime="image/png", key="save_math_result")

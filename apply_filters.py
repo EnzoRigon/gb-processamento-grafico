@@ -2,6 +2,16 @@
 import cv2
 import numpy as np
 
+def add_images(img1, img2):
+    return cv2.add(img1, img2)
+
+def weighted_subtract(img1, img2, alpha=0.7, beta=0.3):
+    return cv2.addWeighted(img1, alpha, img2, -beta, 0)
+
+def blend_images(img1, img2, alpha=0.5):
+    beta = 1.0 - alpha
+    return cv2.addWeighted(img1, alpha, img2, beta, 0)
+
 def apply_box_blur(img, ksize=5):
     return cv2.blur(img, (ksize, ksize))
 
@@ -70,7 +80,7 @@ def to_grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-filters = {
+FILTERS = {
     "Box Blur": {
         "func": apply_box_blur,
         "desc": "Aplica uma média simples entre os pixels vizinhos, resultando em uma suavização uniforme da imagem."
@@ -130,5 +140,20 @@ filters = {
     "Grayscale": {
         "func": to_grayscale,
         "desc": "Converte a imagem colorida em tons de cinza, representando a intensidade luminosa de cada pixel."
+    }
+}
+
+MATH_OPS = {
+    "Soma": {
+        "func": add_images,
+        "desc": "Realiza a soma pixel a pixel entre duas imagens."
+    },
+    "Subtração Ponderada": {
+        "func": weighted_subtract,
+        "desc": "Realiza a subtração ponderada entre duas imagens, ajustando o peso de cada uma."
+    },
+    "Blending": {
+        "func": blend_images,
+        "desc": "Mistura duas imagens com pesos ajustáveis (blending)."
     }
 }
