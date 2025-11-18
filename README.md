@@ -1,20 +1,21 @@
-
 # Processamento Gráfico - GB
 
 **Alunos:** Enzo Porto, Patrick Strassburger e Vicenzo Valmorbida
+
+## Sobre o Projeto
+
+Este projeto é um aplicativo Streamlit para edição de fotos e vídeos usando filtros do OpenCV, stickers personalizados e operações matemáticas entre imagens.
 
 ## Requisitos
 
 - Python 3.12.2
 - [ffmpeg](https://ffmpeg.org/) instalado no sistema (necessário para conversão de vídeos)
 - Instalar dependências do projeto:
-	```bash
-	pip install -r requirements.txt
-	```
-	Ou manualmente:
-	```bash
-	pip install streamlit streamlit-webrtc aiortc av opencv-python pillow
-	```
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  pip install -r requirements.txt
+  ```
 
 ## Como rodar
 
@@ -24,32 +25,36 @@ streamlit run main.py
 
 ## Funcionalidades
 
-- **Aba Foto:**
-	- Captura foto da webcam
-	- Aplica filtros OpenCV (blur, bordas, canais, sepia, etc.)
-	- Permite salvar a imagem filtrada
+### Aba Foto
+- Tire uma foto com a webcam ou faça upload de uma imagem.
+- Aplique filtros do OpenCV (ex: blur, grayscale, sepia, bordas, canais, etc).
+- Cole stickers personalizados na imagem, escolhendo posição com o mouse, tamanho e opacidade.
+- Adicione múltiplos stickers diferentes na mesma foto.
+- Baixe a imagem final editada.
+- Botão para resetar a imagem e filtros.
 
-- **Aba Upload:**
-	- Upload de imagem
-	- Aplica filtros nas imagens
-	- Permite salvar imagem filtrada
+### Aba Vídeo
+- Grave vídeo da webcam com filtro aplicado em tempo real.
+- Baixe o vídeo original e o vídeo filtrado (convertido para H.264).
+- Observação: para conseguir salvar o vídeo, primeiro escolha o filtro desejado. Se trocar o filtro durante a gravação, a câmera é reiniciada e o vídeo pode ser cortado.
 
-- **Aba Vídeo:**
-	- Grava vídeo da webcam
-	- Aplica filtros em tempo real
-	- Salva vídeo original e/ou filtrado
-	- Converte automaticamente para mp4/H.264 (compatível com QuickTime)
+### Aba Operações Matemáticas
+- Combine duas imagens usando operações matemáticas (soma, subtração, blending, etc).
+- Ajuste pesos para blending/subtração ponderada.
+- Baixe o resultado da operação.
+
+## Estrutura do Projeto
+
+- `main.py` — Código principal do app Streamlit.
+- `apply_filters.py` — Implementação dos filtros e operações matemáticas.
+- `util.py` — Funções utilitárias (ex: deletar arquivos temporários).
+- `images/` — Pasta com stickers para colar nas fotos.
+- `records/` — Pasta onde os vídeos gravados são salvos.
+- `requirements.txt` — Dependências do projeto.
 
 ## Observações
 
-- O vídeo gravado é convertido automaticamente para mp4/H.264 após gravação, garantindo compatibilidade com QuickTime Player.
-- O ffmpeg precisa estar instalado e disponível no PATH do sistema.
-
-## TODO
-
-- Operações Matemáticas: Implementar pelo menos 3 operações aritméticas com duas imagens (ex: adição, subtração ponderada, blending) (Verificar com a professora).
-- Parte dos Stickers: Implementar funcionalidade de stickers sobre imagens (as 5 fotos a serem usadas estão commitadas).
-- Talvez verificar a parte da conversão de vídeos pq eu (enzo) estou usando MACOS.
-- Montar slides
+- Para usar a webcam, permita acesso ao navegador.
+- Os stickers devem estar na pasta `images/`.
+- Os vídeos são salvos e convertidos automaticamente para H.264 (foi desenvolvido em MacOS, não sei como isso se comportara em Windows e Linux).
 ---
-Projeto para disciplina de Processamento Gráfico.
