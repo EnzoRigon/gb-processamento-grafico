@@ -198,35 +198,20 @@ with tab2:
         out_recorder_factory=out_recorder_factory,
     )
 
-    # Permite baixar o vídeo original gravado
-    if in_file.exists():
-        h264_input_path = in_file.parent / f"{prefix}_input.mp4"
-        if not h264_input_path.exists():
-            if convert_to_h264(in_file, h264_input_path):
-                st.success("Vídeo pronto para download!")
-            else:
-                st.error("Falha ao converter o vídeo.")
-        if h264_input_path.exists():
-            with h264_input_path.open("rb") as f:
-                st.download_button(
-                    "Download do vídeo", f, "input.mp4", key="download_input_h264_video_tab3", mime="video/mp4"
-                )
-            delete_folder_files(RECORD_DIR)
-
-    # Permite baixar o vídeo filtrado gravado
+    # Permite baixar apenas o vídeo filtrado gravado
     if out_file.exists():
         h264_output_path = out_file.parent / f"{prefix}_output_h264.mp4"
         if not h264_output_path.exists():
             if convert_to_h264(out_file, h264_output_path):
-                st.success("Vídeo pronto para download!")
+                st.success("Vídeo filtrado pronto para download!")
             else:
-                st.error("Falha ao converter o vídeo.")
+                st.error("Falha ao converter o vídeo filtrado.")
         if h264_output_path.exists():
             with h264_output_path.open("rb") as f:
                 st.download_button(
-                    "Download do vídeo", f, "output.mp4", key="download_output_h264_video_tab3", mime="video/mp4"
+                    "Download do vídeo filtrado", f, "video_filtrado.mp4", key="download_output_h264_video_tab3", mime="video/mp4"
                 )
-                delete_folder_files(RECORD_DIR)
+            delete_folder_files(RECORD_DIR)
 
 # --- Aba Operações Matemáticas ---
 with tab3:

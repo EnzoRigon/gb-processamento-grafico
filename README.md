@@ -36,7 +36,6 @@ streamlit run main.py
 ### Aba Vídeo
 - Grave vídeo da webcam com filtro aplicado em tempo real.
 - Baixe o vídeo original e o vídeo filtrado (convertido para H.264).
-- Observação: para conseguir salvar o vídeo, primeiro escolha o filtro desejado. Se trocar o filtro durante a gravação, a câmera é reiniciada e o vídeo pode ser cortado.
 
 ### Aba Operações Matemáticas
 - Combine duas imagens usando operações matemáticas (soma, subtração, blending, etc).
